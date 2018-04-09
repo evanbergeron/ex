@@ -12,8 +12,32 @@ enum {
   TAG_ZERO,
 };
 
+enum {
+  TYPEC_INT,
+  TYPEC_ARROW,
+  TYPEC_EXISTS,
+  TYPEC_VAR,
+};
+
 typedef struct Type {
-  int todo;
+  int tag;
+  union {
+    // int
+    // Arrow
+    struct {
+      struct Type* d;
+      struct Type* c;
+    };
+    // Var
+    struct {
+      int idx; // De Bruijn index
+    };
+    // Exists
+    struct {
+      int t;
+      int r;
+    };
+  };
 } Type;
 
 typedef struct Node {
@@ -22,7 +46,7 @@ typedef struct Node {
   union {
     // Variable
     struct {
-      char* varname;
+      const char* varname;
       int idx; // De Bruijn index
     };
     // Application
