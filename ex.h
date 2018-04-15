@@ -1,5 +1,7 @@
 #ifndef EX_H
 #define EX_H
+#include <stdlib.h>
+#include <stdbool.h>
 
 enum {
   TAG_VAR,
@@ -61,6 +63,12 @@ typedef struct Node {
       struct Node *els;
     };
     // Lambda
+    struct {
+      const char* lambda_name;
+      const char* arg_name;
+      struct Type* arg_type;
+      struct Node* body;
+    };
     // Pack
     struct {
       struct Type* impl_type;
