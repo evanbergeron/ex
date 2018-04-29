@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+// Linked list elem
+typedef struct Llelem {
+  void* data;
+  struct Llelem *next;
+} Llelem;
+
 enum {
   TAG_VAR,
   TAG_APP,
@@ -12,6 +18,8 @@ enum {
   TAG_UNPACK,
   TAG_SUCC,
   TAG_ZERO,
+  TAG_TYPE_LAMBDA,
+  TAG_TYPE_APP
 };
 
 enum {
@@ -19,6 +27,7 @@ enum {
   TYPEC_ARROW,
   TYPEC_EXISTS,
   TYPEC_VAR,
+  TYPEC_ALL
 };
 
 typedef struct Type {
@@ -38,6 +47,11 @@ typedef struct Type {
     struct {
       int t;
       int r;
+    };
+    // All (binds!)
+    struct {
+      struct Type* domain_type;
+      struct Type* codomain_type;
     };
   };
 } Type;
@@ -84,7 +98,22 @@ typedef struct Node {
       struct Node *n;
     };
     // Zero
+    // Type lambda
+    struct {
+      struct Type* type_var;
+      struct Node* poly_body;
+    };
+    // Type application
+    struct {
+      struct Node *polymorphic_f;
+      struct Type *type_arg;
+    };
   };
 } Node;
+
+typedef struct Ctx {
+  void* type_vars;
+  void* term_vars;
+} Ctx;
 
 #endif

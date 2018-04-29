@@ -1,13 +1,17 @@
 #include "ex.h"
 
-void push(void* ctx, void* thing) {
+void push(Ctx* ctx, void* thing) {
 }
 
-void pop(void* ctx, void* thing) {
+void pop(Ctx* ctx, void* thing) {
+}
+
+Type* subst(Type* replacing, Type* to_replace, Type* t) {
+  return NULL;
 }
 
 // TODO make ctx a queue
-void type_annotate(void* ctx, Node* n) {
+void type_annotate(Ctx* ctx, Node* n) {
   n->ty = malloc(sizeof(Type));
   switch (n->tag) {
     case TAG_VAR:
@@ -52,6 +56,18 @@ void type_annotate(void* ctx, Node* n) {
       // TODO syntax for pointers
       n->tag = TYPEC_INT;
       break;
+    case TAG_TYPE_LAMBDA:
+      push(ctx, n->type_var);
+      type_annotate(ctx, n->poly_body);
+      pop(ctx, n->type_var);
+      assert(false);
+    case TAG_TYPE_APP:
+      type_annotate(ctx, n->polymorphic_f);
+      assert(n->polymorphic_f->ty->tag == TYPEC_ALL);
+      // TODO impl. Subst type_arg for domain_type in codomain_type
+      n->ty = subst(n->type_arg, n->polymorphic_f->ty->domain_type,
+                    n->polymorphic_f->ty->codomain_type);
+      assert(false);
     default:
       assert(false);
   }

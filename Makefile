@@ -1,7 +1,7 @@
 # Makefile with support for Windows (mingw32) and NIX (clang / gcc)
 # Might want to add out-of-source builds later.
 
-CC = gcc
+CC = clang
 
 NAME = ex 
 
