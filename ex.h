@@ -15,7 +15,7 @@ enum {
   TAG_IFZ,
   TAG_LAMBDA,
   TAG_PACK,
-  TAG_UNPACK,
+  TAG_OPEN,
   TAG_SUCC,
   TAG_ZERO,
   TAG_TYPE_LAMBDA,
@@ -41,12 +41,13 @@ typedef struct Type {
     };
     // Var
     struct {
+      const char* type_name;
       int idx; // De Bruijn index
     };
     // Exists
     struct {
       int t;
-      int r;
+      struct Type* r;
     };
     // All (binds!)
     struct {
@@ -62,7 +63,7 @@ typedef struct Node {
   union {
     // Variable
     struct {
-      const char* varname;
+      const char* var_name;
       int idx; // De Bruijn index
     };
     // Application
@@ -80,33 +81,42 @@ typedef struct Node {
     struct {
       const char* lambda_name;
       const char* arg_name;
-      struct Type* arg_type;
+      Type* arg_type;
       struct Node* body;
     };
     // Pack
     struct {
-      struct Type* impl_type;
+      Type* impl_type;
       struct Node* to_pack;
     };
-    // Unpack 
+    // Open
     struct {
-      struct Type* interface_type; // fresh in its scope
-      struct Node* to_unpack;
+      // User gives us a type and variable name
+      // The variable name follows the usual scoping rules.
+      // The type name should also follow the usual scoping rules.
+      Type* fresh_type;
+      struct Node* fresh_var;
+
+      struct Node* package;
+
+      // Kinda don't like this AST design, but anything else requires
+      // thought.
+      struct Node* rest_of_code;
     };
-    // Succ 
+    // Succ
     struct {
       struct Node *n;
     };
     // Zero
     // Type lambda
     struct {
-      struct Type* type_var;
+      Type* type_var;
       struct Node* poly_body;
     };
     // Type application
     struct {
       struct Node *polymorphic_f;
-      struct Type *type_arg;
+      Type *type_arg;
     };
   };
 } Node;
